@@ -1,11 +1,14 @@
 #!/bin/bash
 set -e
 
+# Configuration
 CLUSTER_NAME="management"
 KIND_CONFIG="clusters/management.yaml"
 HOST_PORT=8080
 
-echo "Bootstrapping $CLUSTER_NAME cluster..."
+echo "----------------------------------------------------"
+echo "Bootstrapping Management Cluster"
+echo "----------------------------------------------------"
 
 # 1. Create Cluster (Idempotent)
 if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
@@ -34,21 +37,20 @@ fi
 
 # 3. Wait for Readiness
 echo "Waiting for Argo CD to be accessible at http://localhost:$HOST_PORT..."
-for i in {1..30}; do
+for i in {1..60}; do
   if curl -k -s -o /dev/null http://localhost:$HOST_PORT; then
     echo "Argo CD is accessible!"
     break
   fi
-  echo "Waiting for Argo CD..."
   sleep 5
 done
 
-# 5. Output Credentials
+# 4. Output Credentials
 echo "Retrieving initial admin password..."
 PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" --context "kind-$CLUSTER_NAME" | base64 -d)
 
 echo "----------------------------------------------------"
-echo "Bootstrap Complete!"
+echo "Management Bootstrap Complete!"
 echo "Argo CD URL: http://localhost:8080"
 echo "Username: admin"
 echo "Password: $PASSWORD"
