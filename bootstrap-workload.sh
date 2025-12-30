@@ -43,41 +43,45 @@ get_user_data() {
   kubectl config view -o jsonpath="{.users[?(@.name==\"kind-${c_name}\")].user.${jsonpath}}" --raw
 }
 
-# Check if already registered
-if kubectl get secret "${CLUSTER_NAME}-cluster-secret" -n argocd --context "kind-$MGMT_CLUSTER" &> /dev/null; then
-  echo "Cluster '$CLUSTER_NAME' already registered."
-else
-  # Extract credentials
-  CERT_DATA=$(get_user_data "$CLUSTER_NAME" "client-certificate-data")
-  KEY_DATA=$(get_user_data "$CLUSTER_NAME" "client-key-data")
-  
-  # Internal URL
-  SERVER_URL="https://${CLUSTER_NAME}-control-plane:6443"
-  
-  # Config JSON
-  CONFIG_JSON=$(cat <<EOF
+# Check if already registered (optional, we apply idempotently)
+# if kubectl get secret "${CLUSTER_NAME}-cluster-secret" ... 
+# We remove the check to ensure config (like CA data) is updated if script is re-run.
+
+echo ">> Updating registration for '$CLUSTER_NAME' in Argo CD..."
+
+# Extract credentials
+CERT_DATA=$(get_user_data "$CLUSTER_NAME" "client-certificate-data")
+KEY_DATA=$(get_user_data "$CLUSTER_NAME" "client-key-data")
+# Extract CA Data (cluster-level)
+CA_DATA=$(kubectl config view -o jsonpath="{.clusters[?(@.name==\"kind-${CLUSTER_NAME}\")].cluster.certificate-authority-data}" --raw)
+
+# Internal URL
+SERVER_URL="https://${CLUSTER_NAME}-control-plane:6443"
+
+# Config JSON
+CONFIG_JSON=$(cat <<EOF
 {
   "tlsClientConfig": {
     "certData": "$CERT_DATA",
-    "keyData": "$KEY_DATA"
+    "keyData": "$KEY_DATA",
+    "caData": "$CA_DATA"
   }
 }
 EOF
 )
 
-  # Create Secret
-  kubectl create secret generic "${CLUSTER_NAME}-cluster-secret" \
-    -n argocd \
-    --context "kind-$MGMT_CLUSTER" \
-    --from-literal=name="$CLUSTER_NAME" \
-    --from-literal=server="$SERVER_URL" \
-    --from-literal=config="$CONFIG_JSON" \
-    --dry-run=client -o yaml | \
-    kubectl label -f - --local=true -o yaml "argocd.argoproj.io/secret-type=cluster" | \
-    kubectl apply --context "kind-$MGMT_CLUSTER" -f -
-    
-  echo "Registered '$CLUSTER_NAME' successfully."
-fi
+# Create Secret
+kubectl create secret generic "${CLUSTER_NAME}-cluster-secret" \
+  -n argocd \
+  --context "kind-$MGMT_CLUSTER" \
+  --from-literal=name="$CLUSTER_NAME" \
+  --from-literal=server="$SERVER_URL" \
+  --from-literal=config="$CONFIG_JSON" \
+  --dry-run=client -o yaml | \
+  kubectl label -f - --local=true -o yaml "argocd.argoproj.io/secret-type=cluster" | \
+  kubectl apply --context "kind-$MGMT_CLUSTER" -f -
+  
+echo "Registered '$CLUSTER_NAME' successfully."
 
 echo "----------------------------------------------------"
 echo "Workload '$CLUSTER_NAME' Ready!"
