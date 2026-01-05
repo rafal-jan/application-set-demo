@@ -9,7 +9,7 @@ fullnameOverride: ""
 # This chart is installed on Management but creates Applications on Workload.
 # This value SHOULD be overridden by the parent Application or ApplicationSet.
 destination:
-  server: "https://kubernetes.default.svc"
+  name: "default"
 
 apps:
   envoy-gateway:

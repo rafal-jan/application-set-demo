@@ -18,7 +18,7 @@ spec:
         {{- toYaml $app.values | nindent 8 }}
     {{- end }}
   destination:
-    server: {{ $.Values.destination.server }}
+    name: {{ $.Values.destination.name }}
     namespace: {{ $app.namespace }}
   syncPolicy:
     automated:
