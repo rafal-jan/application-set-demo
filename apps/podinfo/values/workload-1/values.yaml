@@ -2,3 +2,15 @@ podinfo:
   ui:
     message: "Hello from workload-1 environment"
   replicaCount: 1
+  httpRoute:
+    enabled: true
+    parentRefs:
+      - name: gateway
+        namespace: default
+        sectionName: http
+    hostnames: []
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /podinfo
