@@ -14,9 +14,10 @@ spec:
       envoyService:
         type: NodePort
         patch:
-          type: JSONPatch
+          type: StrategicMerge
           value:
-            - op: add
-              path: /spec/ports/0/nodePort
-              value: 30080
+            spec:
+              ports:
+                - port: 80
+                  nodePort: 30080
         # externalTrafficPolicy: Local
