@@ -3,7 +3,7 @@ set -e
 
 # Configuration
 CLUSTER_NAME="management"
-KIND_CONFIG="clusters/management.yaml"
+KIND_CONFIG="files/management-cluster.yaml"
 HOST_PORT=8080
 
 echo "----------------------------------------------------"
@@ -26,7 +26,7 @@ helm upgrade --install argocd argocd/argo-cd \
   --namespace argocd \
   --create-namespace \
   --kube-context "kind-$CLUSTER_NAME" \
-  -f argocd-values.yaml \
+  -f files/argocd-values.yaml \
   --wait
 
 # 3. Wait for Readiness
@@ -54,27 +54,18 @@ if ! gh auth status &> /dev/null; then
     exit 1
 fi
 
-REPO_URL=$(gh repo view --json url -q .url)
-GITHUB_TOKEN=$(gh auth token)
+export REPO_URL=$(gh repo view --json url -q .url)
+export GITHUB_TOKEN=$(gh auth token)
 
 echo "Adding repository $REPO_URL to Argo CD..."
 
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Secret
-metadata:
-  name: repo-access
-  namespace: argocd
-  labels:
-    argocd.argoproj.io/secret-type: repository
-stringData:
-  type: git
-  url: $REPO_URL
-  password: $GITHUB_TOKEN
-  username: git
-EOF
+envsubst < files/repo-access.yaml | kubectl apply -f -
 
-# 5. Output Credentials
+# 5. Create ApplicationSet
+echo "Creating ApplicationSet..."
+envsubst < files/workload-applicationset.yaml | kubectl apply -f -
+
+# 6. Output Credentials
 echo "Retrieving initial admin password..."
 PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" --context "kind-$CLUSTER_NAME" | base64 -d)
 

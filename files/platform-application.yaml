@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-${CLUSTER_NAME}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rafal-jan/application-set-demo.git
+    path: platform
+    targetRevision: main
+    helm:
+      valuesObject:
+        destination:
+          name: ${CLUSTER_NAME}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+      - CreateNamespace=true

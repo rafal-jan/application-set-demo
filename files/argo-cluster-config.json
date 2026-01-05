@@ -1,0 +1,7 @@
+{
+    "tlsClientConfig": {
+        "certData": "${CERT_DATA}",
+        "keyData": "${KEY_DATA}",
+        "caData": "${CA_DATA}"
+    }
+}

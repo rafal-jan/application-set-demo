@@ -6,7 +6,7 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-CLUSTER_NAME="$1"
+export CLUSTER_NAME="$1"
 MGMT_CLUSTER="management"
 
 echo "----------------------------------------------------"
@@ -17,30 +17,11 @@ echo "----------------------------------------------------"
 if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
     echo "Cluster '$CLUSTER_NAME' already exists. Skipping creation."
 else
-HOST_PORT="${2:-8081}"
+export HOST_PORT="${2:-8081}"
 
     echo "Creating cluster '$CLUSTER_NAME' with host port mapping $HOST_PORT:30080..."
     # Add control plane container name to certSANs for internal communication
-    cat <<EOF | kind create cluster --name "$CLUSTER_NAME" --config -
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-  extraPortMappings:
-  - containerPort: 30080
-    hostPort: $HOST_PORT
-    protocol: TCP
-networking:
-  apiServerAddress: "127.0.0.1"
-kubeadmConfigPatches:
-  - |
-    kind: ClusterConfiguration
-    apiServer:
-      certSANs:
-        - "${CLUSTER_NAME}-control-plane"
-        - "127.0.0.1"
-        - "localhost"
-EOF
+    envsubst < files/workload-cluster.yaml | kind create cluster --name "$CLUSTER_NAME" --config -
 fi
 
 # 2. Register in Management Cluster
@@ -60,25 +41,16 @@ get_user_data() {
 echo ">> Updating registration for '$CLUSTER_NAME' in Argo CD..."
 
 # Extract credentials
-CERT_DATA=$(get_user_data "$CLUSTER_NAME" "client-certificate-data")
-KEY_DATA=$(get_user_data "$CLUSTER_NAME" "client-key-data")
+export CERT_DATA=$(get_user_data "$CLUSTER_NAME" "client-certificate-data")
+export KEY_DATA=$(get_user_data "$CLUSTER_NAME" "client-key-data")
 # Extract CA Data (cluster-level)
-CA_DATA=$(kubectl config view -o jsonpath="{.clusters[?(@.name==\"kind-${CLUSTER_NAME}\")].cluster.certificate-authority-data}" --raw)
+export CA_DATA=$(kubectl config view -o jsonpath="{.clusters[?(@.name==\"kind-${CLUSTER_NAME}\")].cluster.certificate-authority-data}" --raw)
 
 # Internal URL
 SERVER_URL="https://${CLUSTER_NAME}-control-plane:6443"
 
 # Config JSON
-CONFIG_JSON=$(cat <<EOF
-{
-  "tlsClientConfig": {
-    "certData": "$CERT_DATA",
-    "keyData": "$KEY_DATA",
-    "caData": "$CA_DATA"
-  }
-}
-EOF
-)
+CONFIG_JSON=$(envsubst < files/argo-cluster-config.json)
 
 # Create Secret
 kubectl create secret generic "${CLUSTER_NAME}-cluster-secret" \
@@ -100,33 +72,7 @@ echo "----------------------------------------------------"
 # 3. Install Platform Components
 echo ">> Installing Platform Components for '$CLUSTER_NAME'..."
 
-cat <<EOF | kubectl apply --context "kind-$MGMT_CLUSTER" -f -
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: platform-$CLUSTER_NAME
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/rafal-jan/application-set-demo.git
-    path: platform
-    targetRevision: main
-    helm:
-      valuesObject:
-        destination:
-          name: $CLUSTER_NAME
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-      allowEmpty: true
-    syncOptions:
-      - CreateNamespace=true
-EOF
+envsubst < files/platform-application.yaml | kubectl apply --context "kind-$MGMT_CLUSTER" -f -
 
 echo "Platform components installation initiated."
 
