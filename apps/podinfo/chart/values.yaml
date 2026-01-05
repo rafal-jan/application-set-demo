@@ -1,0 +1,20 @@
+podinfo:
+  replicaCount: 1
+  httpRoute:
+    enabled: true
+    parentRefs:
+      - name: gateway
+        namespace: default
+        sectionName: http
+    hostnames: []
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /podinfo
+        filters:
+          - type: URLRewrite
+            urlRewrite:
+              path:
+                type: ReplacePrefixMatch
+                replacePrefixMatch: /
