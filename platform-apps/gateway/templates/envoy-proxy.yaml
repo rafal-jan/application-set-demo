@@ -13,4 +13,6 @@ spec:
         replicas: 1
       envoyService:
         type: NodePort
+        http:
+          nodePort: 30080
         # externalTrafficPolicy: Local
