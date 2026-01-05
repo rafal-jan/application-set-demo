@@ -22,6 +22,7 @@ spec:
         path: 'apps/{{index .path.segments 1}}/chart'
         helm:
           valueFiles:
+          - '../../../global/{{index .path.segments 3}}.yaml'
           - '../values/{{index .path.segments 3}}/values.yaml'
       destination:
         name: '{{index .path.segments 3}}'

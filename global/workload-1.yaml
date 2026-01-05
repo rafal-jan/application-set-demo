@@ -1,0 +1,3 @@
+podinfo:
+  ui:
+    message: "Hello from workload-1 environment"

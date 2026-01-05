@@ -1,0 +1,22 @@
+podinfo:
+  replicaCount: 1
+  ui:
+    color: "#75347C"
+  httpRoute:
+    enabled: true
+    parentRefs:
+      - name: gateway
+        namespace: default
+        sectionName: http
+    hostnames: []
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /podinfo2
+        filters:
+          - type: URLRewrite
+            urlRewrite:
+              path:
+                type: ReplacePrefixMatch
+                replacePrefixMatch: /
