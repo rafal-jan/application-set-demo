@@ -38,6 +38,8 @@ kubeadmConfigPatches:
     apiServer:
       certSANs:
         - "${CLUSTER_NAME}-control-plane"
+        - "127.0.0.1"
+        - "localhost"
 EOF
 fi
 
