@@ -1,0 +1,31 @@
+{{- range $name, $app := .Values.apps }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "platform.labels" $ | nindent 4 }}
+spec:
+  project: default
+  source:
+    repoURL: {{ $app.repoURL }}
+    chart: {{ $app.chart }}
+    targetRevision: {{ $app.version }}
+    {{- if $app.values }}
+    helm:
+      values: |
+        {{- toYaml $app.values | nindent 8 }}
+    {{- end }}
+  destination:
+    server: {{ $.Values.destination.server }}
+    namespace: {{ $app.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+      - CreateNamespace=true
+---
+{{- end }}

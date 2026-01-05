@@ -31,13 +31,28 @@ This script will:
 To create and register a workload cluster (e.g., `workload-1`), run:
 
 ```bash
-./bootstrap-workload.sh workload-1
+./bootstrap-workload.sh <cluster_name> [host_port]
+```
+
+Example:
+
+```bash
+./bootstrap-workload.sh workload-1 8081
 ```
 
 This script will:
 
-1. Create a `kind` cluster named `workload-1` (with SANs for internal access).
-2. Register it in the management cluster's Argo CD using local credentials.
+1. Create a `kind` cluster named `<cluster_name>`.
+2. Map container port `30080` to the specified host port (default `8081`) for Gateway access.
+3. Register the cluster in the management cluster's Argo CD using local credentials.
+
+### 3. Platform Components
+
+This repository includes a `platform` Helm chart which implements the **App of Apps** pattern. It is designed to be installed on the Management cluster but manages components on the Workload clusters.
+
+Default components:
+
+- **Envoy Gateway**: Installed in `envoy-gateway-system` namespace. Exposed via NodePort `30080`.
 
 ## Accessing Argo CD
 

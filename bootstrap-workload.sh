@@ -17,11 +17,19 @@ echo "----------------------------------------------------"
 if kind get clusters | grep -q "^$CLUSTER_NAME$"; then
     echo "Cluster '$CLUSTER_NAME' already exists. Skipping creation."
 else
-    echo "Creating cluster '$CLUSTER_NAME'..."
+HOST_PORT="${2:-8081}"
+
+    echo "Creating cluster '$CLUSTER_NAME' with host port mapping $HOST_PORT:30080..."
     # Add control plane container name to certSANs for internal communication
     cat <<EOF | kind create cluster --name "$CLUSTER_NAME" --config -
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30080
+    hostPort: $HOST_PORT
+    protocol: TCP
 networking:
   apiServerAddress: "127.0.0.1"
 kubeadmConfigPatches:

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: platform
+description: A Helm chart for Kubernetes implementing App of Apps pattern for platform components
+type: application
+version: 0.1.0

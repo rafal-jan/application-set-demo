@@ -1,0 +1,25 @@
+# Default values for platform.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Destination server for the Applications created by this chart.
+# This chart is installed on Management but creates Applications on Workload.
+# This value SHOULD be overridden by the parent Application or ApplicationSet.
+destination:
+  server: "https://kubernetes.default.svc"
+
+apps:
+  envoy-gateway:
+    # For OCI registries, specify the registry URL without the chart name provided the chart is in the path?
+    # Actually, for Argo CD + OCI:
+    # repoURL: "registry-1.docker.io/envoyproxy"
+    # chart: "gateway-helm"
+    repoURL: "registry-1.docker.io/envoyproxy"
+    chart: "gateway-helm"
+    version: "v1.6.1"
+    namespace: "envoy-gateway-system"
+    # Additional values for the Envoy Gateway chart
+    values: {}

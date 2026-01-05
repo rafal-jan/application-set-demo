@@ -45,7 +45,42 @@ for i in {1..60}; do
   sleep 5
 done
 
-# 4. Output Credentials
+# 4. Configure Repository Access
+echo "Configuring Argo CD repository access..."
+
+# Check for gh CLI
+if ! command -v gh &> /dev/null; then
+    echo "Error: gh CLI not found. Please install GitHub CLI."
+    exit 1
+fi
+
+# Check gh auth status
+if ! gh auth status &> /dev/null; then
+    echo "Error: gh CLI not authenticated. Please run 'gh auth login'."
+    exit 1
+fi
+
+REPO_URL=$(gh repo view --json url -q .url)
+GITHUB_TOKEN=$(gh auth token)
+
+echo "Adding repository $REPO_URL to Argo CD..."
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-access
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  type: git
+  url: $REPO_URL
+  password: $GITHUB_TOKEN
+  username: git
+EOF
+
+# 5. Output Credentials
 echo "Retrieving initial admin password..."
 PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" --context "kind-$CLUSTER_NAME" | base64 -d)
 
