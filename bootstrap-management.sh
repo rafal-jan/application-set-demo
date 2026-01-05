@@ -20,20 +20,14 @@ fi
 
 # 2. Install Argo CD
 echo "Installing Argo CD with Helm..."
-# Check if Argo CD is already installed by looking for the release
-if helm status argocd -n argocd --kube-context "kind-$CLUSTER_NAME" &> /dev/null; then
-  echo "Argo CD release exists. Skipping installation."
-else
-  kubectl create namespace argocd --context "kind-$CLUSTER_NAME" --dry-run=client -o yaml | kubectl apply --context "kind-$CLUSTER_NAME" -f -
-  
-  helm repo add argocd https://argoproj.github.io/argo-helm
-  helm repo update argocd
-  helm upgrade --install argocd argocd/argo-cd \
-    --namespace argocd \
-    --kube-context "kind-$CLUSTER_NAME" \
-    -f argocd-values.yaml \
-    --wait
-fi
+helm repo add argocd https://argoproj.github.io/argo-helm
+helm repo update argocd
+helm upgrade --install argocd argocd/argo-cd \
+  --namespace argocd \
+  --create-namespace \
+  --kube-context "kind-$CLUSTER_NAME" \
+  -f argocd-values.yaml \
+  --wait
 
 # 3. Wait for Readiness
 echo "Waiting for Argo CD to be accessible at http://localhost:$HOST_PORT..."
