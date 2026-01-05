@@ -96,3 +96,37 @@ echo "Registered '$CLUSTER_NAME' successfully."
 echo "----------------------------------------------------"
 echo "Workload '$CLUSTER_NAME' Ready!"
 echo "----------------------------------------------------"
+
+# 3. Install Platform Components
+echo ">> Installing Platform Components for '$CLUSTER_NAME'..."
+
+cat <<EOF | kubectl apply --context "kind-$MGMT_CLUSTER" -f -
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-$CLUSTER_NAME
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rafal-jan/application-set-demo.git
+    path: platform
+    targetRevision: main
+    helm:
+      valuesObject:
+        destination:
+          name: $CLUSTER_NAME
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+      - CreateNamespace=true
+EOF
+
+echo "Platform components installation initiated."
+
