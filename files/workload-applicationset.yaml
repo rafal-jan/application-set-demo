@@ -10,6 +10,7 @@ spec:
   - git:
       repoURL: ${REPO_URL}
       revision: HEAD
+      requeueAfterSeconds: 30
       files:
       - path: "apps/*/values/*/values.yaml"
   template:
