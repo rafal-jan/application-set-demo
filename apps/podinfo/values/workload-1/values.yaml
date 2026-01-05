@@ -14,3 +14,9 @@ podinfo:
           - path:
               type: PathPrefix
               value: /podinfo
+        filters:
+          - type: URLRewrite
+            urlRewrite:
+              path:
+                type: ReplacePrefixMatch
+                replacePrefixMatch: /
