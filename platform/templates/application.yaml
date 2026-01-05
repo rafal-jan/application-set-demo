@@ -6,11 +6,19 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "platform.labels" $ | nindent 4 }}
+  {{- with $app.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   project: default
   source:
     repoURL: {{ $app.repoURL }}
+    {{- if $app.path }}
+    path: {{ $app.path }}
+    {{- else }}
     chart: {{ $app.chart }}
+    {{- end }}
     targetRevision: {{ $app.version }}
     {{- if $app.values }}
     helm:

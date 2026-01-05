@@ -23,3 +23,11 @@ apps:
     namespace: "envoy-gateway-system"
     # Additional values for the Envoy Gateway chart
     values: {}
+
+  gateway:
+    repoURL: "https://github.com/rafal-jan/application-set-demo"
+    path: "platform-apps/gateway"
+    version: "HEAD"
+    namespace: "envoy-gateway-system"
+    annotations:
+      argocd.argoproj.io/sync-wave: "1"

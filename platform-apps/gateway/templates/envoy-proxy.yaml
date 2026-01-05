@@ -1,0 +1,16 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: custom-proxy-config
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        container:
+          image: envoyproxy/envoy:v1.36.4
+        replicas: 1
+      envoyService:
+        type: NodePort
+        # externalTrafficPolicy: Local
