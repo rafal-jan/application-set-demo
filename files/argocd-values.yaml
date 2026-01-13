@@ -1,8 +1,29 @@
+extraObjects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: in-cluster-secret
+      namespace: argocd
+      labels:
+        argocd.argoproj.io/secret-type: cluster
+        env: management
+    type: Opaque
+    stringData:
+      name: "in-cluster"
+      server: "https://kubernetes.default.svc"
+      config: |
+        {
+          "tlsClientConfig": {
+            "insecure": false,
+            "caData": ""
+          }
+        }
+
 server:
   service:
     type: NodePort
     nodePorts:
-      http: 30080
+      http: 30080 # TODO: expose through Envoy Gateway
 
 configs:
   cm:

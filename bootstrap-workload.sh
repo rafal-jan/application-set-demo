@@ -60,7 +60,7 @@ kubectl create secret generic "${CLUSTER_NAME}-cluster-secret" \
   --from-literal=server="$SERVER_URL" \
   --from-literal=config="$CONFIG_JSON" \
   --dry-run=client -o yaml | \
-  kubectl label -f - --local=true -o yaml "argocd.argoproj.io/secret-type=cluster" | \
+  kubectl label -f - --local=true -o yaml "argocd.argoproj.io/secret-type=cluster" "env=$CLUSTER_NAME" | \
   kubectl apply --context "kind-$MGMT_CLUSTER" -f -
   
 echo "Registered '$CLUSTER_NAME' successfully."
