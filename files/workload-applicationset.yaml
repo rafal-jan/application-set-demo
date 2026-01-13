@@ -7,15 +7,21 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-  - git:
-      repoURL: ${REPO_URL}
-      revision: HEAD
-      requeueAfterSeconds: 30
-      files:
-      - path: "apps/*/values/*/values.yaml"
+  - matrix:
+      generators:
+      - git:
+          repoURL: ${REPO_URL}
+          revision: HEAD
+          requeueAfterSeconds: 30
+          files:
+          - path: "apps/*/values/*/values.yaml"
+      - clusters:
+          selector:
+            matchLabels:
+              env: '{{index .path.segments 3}}'
   template:
     metadata:
-      name: '{{index .path.segments 1}}-{{index .path.segments 3}}'
+      name: '{{index .path.segments 1}}-{{.name}}'
     spec:
       project: default
       source:
@@ -26,7 +32,7 @@ spec:
           - '../../../global/{{index .path.segments 3}}.yaml'
           - '../values/{{index .path.segments 3}}/values.yaml'
       destination:
-        name: '{{index .path.segments 3}}'
+        server: '{{.server}}'
         namespace: '{{index .path.segments 1}}'
       syncPolicy:
         automated:
