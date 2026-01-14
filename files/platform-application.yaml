@@ -12,6 +12,9 @@ spec:
     helm:
       valuesObject:
         clusterName: ${CLUSTER_NAME}
+        apps:
+          workload-apps:
+            enabled: ${WORKLOAD_APPS_ENABLED}
         destination:
           name: ${DESTINATION_NAME}
   destination:

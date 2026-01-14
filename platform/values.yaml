@@ -30,5 +30,6 @@ apps:
     path: ".platform/argocd"
     version: "HEAD"
     namespace: "argocd"
+    enabled: false
     annotations:
       argocd.argoproj.io/sync-wave: "5"

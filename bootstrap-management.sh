@@ -64,6 +64,7 @@ envsubst < files/repo-access.yaml | kubectl apply -f -
 # 5. Install Platform Components
 echo "Installing Platform Components..."
 export DESTINATION_NAME="in-cluster"
+export WORKLOAD_APPS_ENABLED="true"
 envsubst < files/platform-application.yaml | kubectl apply -f -
 
 # 6. Output Credentials

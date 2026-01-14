@@ -20,10 +20,18 @@ extraObjects:
         }
 
 server:
-  service:
-    type: NodePort
-    nodePorts:
-      http: 30080 # TODO: expose through Envoy Gateway
+  extraArgs:
+    - --insecure
+  httproute:
+    enabled: true
+    parentRefs:
+      - name: gateway
+        namespace: default
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
 
 configs:
   cm:

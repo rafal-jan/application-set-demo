@@ -72,6 +72,7 @@ echo "----------------------------------------------------"
 # 3. Install Platform Components
 echo ">> Installing Platform Components for '$CLUSTER_NAME'..."
 export DESTINATION_NAME="$CLUSTER_NAME"
+export WORKLOAD_APPS_ENABLED="false"
 envsubst < files/platform-application.yaml | kubectl apply --context "kind-$MGMT_CLUSTER" -f -
 
 echo "Platform components installation initiated."

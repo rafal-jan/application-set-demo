@@ -1,4 +1,5 @@
 {{- range $name, $app := .Values.apps }}
+{{- if ne $app.enabled false }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -37,4 +38,5 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
 ---
+{{- end }}
 {{- end }}
