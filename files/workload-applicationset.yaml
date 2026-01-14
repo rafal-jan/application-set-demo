@@ -41,3 +41,8 @@ spec:
           allowEmpty: true
         syncOptions:
           - CreateNamespace=true
+  templatePatch: |
+    spec:
+      syncPolicy:
+        automated:
+          enabled: {{ dig "autoSync" true . }}

@@ -1,1 +1,2 @@
 # Trigger deployment on workload-1
+autoSync: false

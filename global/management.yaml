@@ -1,3 +1,4 @@
 podinfo:
   ui:
     message: "Hello from management environment"
+autoSync: false
