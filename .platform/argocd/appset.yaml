@@ -10,7 +10,7 @@ spec:
   - matrix:
       generators:
       - git:
-          repoURL: ${REPO_URL}
+          repoURL: https://github.com/rafal-jan/application-set-demo
           revision: HEAD
           requeueAfterSeconds: 30
           files:
@@ -25,7 +25,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: ${REPO_URL}
+        repoURL: https://github.com/rafal-jan/application-set-demo
         path: 'apps/{{index .path.segments 1}}/chart'
         helm:
           valueFiles:

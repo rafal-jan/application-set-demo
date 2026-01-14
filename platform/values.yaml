@@ -22,3 +22,11 @@ apps:
     namespace: "envoy-gateway-system"
     annotations:
       argocd.argoproj.io/sync-wave: "1"
+
+  workload-apps:
+    repoURL: "https://github.com/rafal-jan/application-set-demo"
+    path: ".platform/argocd"
+    version: "HEAD"
+    namespace: "argocd"
+    annotations:
+      argocd.argoproj.io/sync-wave: "5"

@@ -61,9 +61,9 @@ echo "Adding repository $REPO_URL to Argo CD..."
 
 envsubst < files/repo-access.yaml | kubectl apply -f -
 
-# 5. Create ApplicationSet
-echo "Creating ApplicationSet..."
-envsubst < files/workload-applicationset.yaml | kubectl apply -f -
+# 5. Install Platform Components
+echo "Installing Platform Components..."
+envsubst < files/platform-application.yaml | kubectl apply -f -
 
 # 6. Output Credentials
 echo "Retrieving initial admin password..."
