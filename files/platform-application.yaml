@@ -11,8 +11,9 @@ spec:
     targetRevision: main
     helm:
       valuesObject:
+        clusterName: ${CLUSTER_NAME}
         destination:
-          name: ${CLUSTER_NAME}
+          name: ${DESTINATION_NAME}
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

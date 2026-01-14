@@ -5,6 +5,8 @@
 nameOverride: ""
 fullnameOverride: ""
 
+clusterName: ""
+
 destination:
   name: ""
 

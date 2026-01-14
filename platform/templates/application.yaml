@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: {{ $name }}-{{ $.Values.destination.name }}
+  name: {{ $name }}-{{ $.Values.clusterName }}
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "platform.labels" $ | nindent 4 }}

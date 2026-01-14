@@ -2,7 +2,7 @@
 set -e
 
 # Configuration
-CLUSTER_NAME="management"
+export CLUSTER_NAME="management"
 KIND_CONFIG="files/management-cluster.yaml"
 HOST_PORT=8080
 
@@ -63,6 +63,7 @@ envsubst < files/repo-access.yaml | kubectl apply -f -
 
 # 5. Install Platform Components
 echo "Installing Platform Components..."
+export DESTINATION_NAME="in-cluster"
 envsubst < files/platform-application.yaml | kubectl apply -f -
 
 # 6. Output Credentials
