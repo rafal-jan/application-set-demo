@@ -48,7 +48,7 @@ This script will:
 
 ### 3. Platform Components
 
-This repository includes a `platform` Helm chart which implements the **App of Apps** pattern. It is designed to be installed on the Management cluster but manages components on the Workload clusters.
+This repository includes a `platform` Helm chart at `.platform/chart` which implements the **App of Apps** pattern. It is designed to be installed on all clusters, management and workload alike.
 
 Default components:
 

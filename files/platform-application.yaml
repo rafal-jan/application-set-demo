@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/rafal-jan/application-set-demo.git
-    path: platform
+    path: .platform/chart
     targetRevision: main
     helm:
       valuesObject:
