@@ -73,3 +73,7 @@ To destroy the cluster:
 ```bash
 kind delete cluster --name management
 ```
+
+## Developer Guide
+
+For detailed instructions on how to deploy applications using this repository, please refer to [DEVELOPER.md](DEVELOPER.md).
