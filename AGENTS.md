@@ -48,3 +48,4 @@ Contains platform-level configurations.
 - **Idempotency:** Scripts and commands should be idempotent where possible.
 - **Naming:** Follow existing naming conventions (kebab-case for directories/files).
 - **Safety:** Always verify current context before applying changes to clusters.
+- **Commits:** All commits made by the coding agent must follow [Conventional Commits](https://www.conventionalcommits.org/).
