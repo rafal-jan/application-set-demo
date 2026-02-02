@@ -3,7 +3,7 @@ set -e
 
 # Configuration
 export CLUSTER_NAME="management"
-KIND_CONFIG="files/management-cluster.yaml"
+KIND_CONFIG=".platform/files/management-cluster.yaml"
 HOST_PORT=8080
 
 echo "----------------------------------------------------"
@@ -26,7 +26,7 @@ helm upgrade --install argocd argocd/argo-cd \
   --namespace argocd \
   --create-namespace \
   --kube-context "kind-$CLUSTER_NAME" \
-  -f files/argocd-values.yaml \
+  -f .platform/files/argocd-values.yaml \
   --wait
 
 # 3. Wait for Readiness
@@ -59,13 +59,13 @@ export GITHUB_TOKEN=$(gh auth token)
 
 echo "Adding repository $REPO_URL to Argo CD..."
 
-envsubst < files/repo-access.yaml | kubectl apply -f -
+envsubst < .platform/files/repo-access.yaml | kubectl apply -f -
 
 # 5. Install Platform Components
 echo "Installing Platform Components..."
 export DESTINATION_NAME="in-cluster"
 export WORKLOAD_APPS_ENABLED="true"
-envsubst < files/platform-application.yaml | kubectl apply -f -
+envsubst < .platform/files/platform-application.yaml | kubectl apply -f -
 
 # 6. Output Credentials
 echo "Retrieving initial admin password..."
