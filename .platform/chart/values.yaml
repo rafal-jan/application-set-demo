@@ -19,7 +19,7 @@ apps:
 
   gateway:
     repoURL: "https://github.com/rafal-jan/application-set-demo"
-    path: "platform-apps/gateway"
+    path: ".platform/apps/gateway"
     version: "HEAD"
     namespace: "envoy-gateway-system"
     annotations:

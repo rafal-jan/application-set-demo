@@ -21,7 +21,7 @@ export HOST_PORT="${2:-8081}"
 
     echo "Creating cluster '$CLUSTER_NAME' with host port mapping $HOST_PORT:30080..."
     # Add control plane container name to certSANs for internal communication
-    envsubst < files/workload-cluster.yaml | kind create cluster --name "$CLUSTER_NAME" --config -
+    envsubst < .platform/files/workload-cluster.yaml | kind create cluster --name "$CLUSTER_NAME" --config -
 fi
 
 # 2. Register in Management Cluster
@@ -50,7 +50,7 @@ export CA_DATA=$(kubectl config view -o jsonpath="{.clusters[?(@.name==\"kind-${
 SERVER_URL="https://${CLUSTER_NAME}-control-plane:6443"
 
 # Config JSON
-CONFIG_JSON=$(envsubst < files/argo-cluster-config.json)
+CONFIG_JSON=$(envsubst < .platform/files/argo-cluster-config.json)
 
 # Create Secret
 kubectl create secret generic "${CLUSTER_NAME}-cluster-secret" \
@@ -73,7 +73,7 @@ echo "----------------------------------------------------"
 echo ">> Installing Platform Components for '$CLUSTER_NAME'..."
 export DESTINATION_NAME="$CLUSTER_NAME"
 export WORKLOAD_APPS_ENABLED="false"
-envsubst < files/platform-application.yaml | kubectl apply --context "kind-$MGMT_CLUSTER" -f -
+envsubst < .platform/files/platform-application.yaml | kubectl apply --context "kind-$MGMT_CLUSTER" -f -
 
 echo "Platform components installation initiated."
 

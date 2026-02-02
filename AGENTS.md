@@ -28,9 +28,13 @@ apps/
 
 ### Platform (`.platform/`)
 Contains platform-level configurations.
+- `apps/`: Platform applications (e.g., gateway).
 - `argocd/`: Argo CD ApplicationSet definitions.
 - `chart/`: The "Platform" Helm chart (App of Apps).
+- `files/`: Configuration files for bootstrapping.
 - `global/`: Global configuration values for clusters.
+- `bootstrap-management.sh`: Script to bootstrap the management cluster.
+- `bootstrap-workload.sh`: Script to bootstrap workload clusters.
 
 **Rule:** Do not modify `.platform/` unless explicitly instructed to change platform-level infrastructure.
 
