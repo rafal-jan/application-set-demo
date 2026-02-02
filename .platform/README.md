@@ -43,16 +43,21 @@ Example:
 This script will:
 
 1. Create a `kind` cluster named `<cluster_name>`.
-2. Map container port `30080` to the specified host port (default `8081`) for Gateway access.
-3. Register the cluster in the management cluster's Argo CD using local credentials.
+2. Map container port `30080` to the specified host port (default `8081`) for
+   Gateway access.
+3. Register the cluster in the management cluster's Argo CD using local
+   credentials.
 
 ### 3. Platform Components
 
-This repository includes a `platform` Helm chart at `.platform/chart` which implements the **App of Apps** pattern. It is designed to be installed on all clusters, management and workload alike.
+This repository includes a `platform` Helm chart at `.platform/chart` which
+implements the **App of Apps** pattern. It is designed to be installed on all
+clusters, management and workload alike.
 
 Default components:
 
-- **Envoy Gateway**: Installed in `envoy-gateway-system` namespace. Exposed via NodePort `30080`.
+- **Envoy Gateway**: Installed in `envoy-gateway-system` namespace. Exposed via
+  NodePort `30080`.
 
 ## Accessing Argo CD
 
@@ -63,7 +68,8 @@ Default components:
 If you need to retrieve the password again:
 
 ```bash
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d && echo
 ```
 
 ## Teardown
@@ -76,4 +82,5 @@ kind delete cluster --name management
 
 ## Developer Guide
 
-For detailed instructions on how to deploy applications using this repository, please refer to [Developer Guide](../README.md).
+For detailed instructions on how to deploy applications using this repository,
+please refer to [Developer Guide](../README.md).
